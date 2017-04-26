@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- '6'
+script: npm run lint
+after_success: npm run build
+cache: yarn
+deploy:
+  provider: heroku
+  app: rampton
+  on:
+    repo: mrazf/rampton
+  api_key:
+    secure: WK6ujxACO2K0vitAv0s+3wHnX6OTE10dDNyCb/QqLopr5nnV/t78tIzLobLx4obO1FvCryoYhek2S7z85SBOT5JmCkZ4vL9QRZD9BBvZ/crkgDG9DKoeisFo2nrIOs2ZAEtEgQcXEgfkI/1h+XNgTJrD72WCdCIueT/+pmBOPlhkw8jrIxG/jz2ci6z7BTUiWPL9huEUw9rjHirO3yaSd9L6H1sy/hO+EKpqubUcAG45x1J0xTkdS0awQGUWvWuWhIpvkGJpOLWX/1kVdJ3te+Qs8y1sNjPtgdHnUo57GMMouBIm3aCW11BGmeOV4dUshOSEIwcrAKvWptwVPKAtHV7Ej+Al9kMno5Ar9jRlEvGQUndaOlIOnNKVybmHfC/Q4/kwS7aYxgLiZWD2amoTAjWvj/exwgKuBoo7R8ASmOvQZcwo470J+eob7w7r88b3I5cBf8yYogO6zdAAhA3wmsUgG+L5WUu08164X54CQF1kxJ5AUl2raqet5VMDuZOmS2zwqIeWCDptsCCrdOnVFLK8sQePoGyTU7O57to4LamaQRzm7s906Qmzir1eeVAqIg0NDi/wMzE/L38nST3/uq2qkDvKx4Qj8BKLWSs1kDjvnigiOTzv1zfBTOWlO7cXgGF3vUpc55OHHR+lL5sbklZIL4NNM7EYZ2CAvEqV7gE=
