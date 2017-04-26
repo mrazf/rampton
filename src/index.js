@@ -12,6 +12,6 @@ admin.initializeApp({
 })
 
 app.set('port', (process.env.PORT || 9001))
-app.listen(app.get('port'), () => console.log('Pennies Transactions is running on port', app.get('port')))
+app.listen(app.get('port'), () => console.log('Rampton is running on port', app.get('port')))
 
 export default app
