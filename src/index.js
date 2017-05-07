@@ -1,5 +1,6 @@
 import {} from 'dotenv/config'
 import admin from 'firebase-admin'
+import './databases'
 import app from './app'
 
 admin.initializeApp({

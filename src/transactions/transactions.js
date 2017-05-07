@@ -4,14 +4,14 @@ import configurator from '../configurator'
 import get from './get'
 import refresh from './refresh'
 
-const getTransactions = ({ uid, monzo, dynamo }, from, to) => {
+const getTransactions = ({ uid, monzo, user }, from, to) => {
   return new Promise((resolve, reject) => {
     get(monzo, from, to)
       .then(resolve)
       .catch(err => {
         console.warn(`Get transactions failed with ${err}, refreshing and retrying`)
 
-        refresh({ uid, monzo, dynamo })
+        refresh({ uid, monzo, user })
           .then(({ monzo }) => get(monzo, from, to))
           .then(resolve)
           .catch(reject)
