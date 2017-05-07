@@ -1,0 +1,14 @@
+version: '2'
+services:
+  rampton:
+    build: .
+    ports:
+      - "9001:9001"
+    volumes:
+      - .:/usr/src/app
+  postgres:
+    image: "postgres:9.6"
+    environment:
+      POSTGRES_PASSWORD: "password"
+    volumes:
+      - ./dev-db-dump:/docker-entrypoint-initdb.d

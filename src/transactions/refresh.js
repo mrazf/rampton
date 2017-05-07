@@ -1,6 +1,6 @@
 import request from 'request'
 
-const fresh = ({ uid, monzo, dynamo }) => {
+const fresh = ({ uid, monzo, user }) => {
   return new Promise((resolve, reject) => {
     const options = {
       url: 'https://api.monzo.com/oauth2/token',
@@ -19,32 +19,22 @@ const fresh = ({ uid, monzo, dynamo }) => {
 
       if (parsed.error) return reject(parsed.message)
 
-      resolve({ uid, dynamo, monzo: { ...monzo, token: parsed } })
+      resolve({ uid, user, monzo: { ...monzo, token: parsed } })
     })
   })
 }
 
-const save = ({ uid, monzo, dynamo }) => {
-  const params = {
-    TableName: 'Pennies-MonzoApiToken',
-    Item: {
-      ...monzo.token,
-      pennies_user_id: uid
-    }
-  }
-
+const save = ({ uid, monzo, user }) => {
   return new Promise((resolve, reject) => {
-    dynamo.put(params, (err, data) => {
-      if (err) return reject(err)
-
-      resolve({ uid, monzo, dynamo })
-    })
+    user.update({ monzo_token: { ...monzo.token } })
+      .then(() => resolve({ uid, monzo, user }))
+      .catch(reject)
   })
 }
 
-module.exports = ({ uid, monzo, dynamo }) => {
+module.exports = ({ uid, monzo, user }) => {
   return new Promise((resolve, reject) => {
-    fresh({ uid, monzo, dynamo })
+    fresh({ uid, monzo, user })
       .then(save)
       .then(resolve)
       .catch(reject)
