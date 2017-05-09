@@ -3,7 +3,7 @@ const monzoClientSecret = process.env.MONZO_CLIENT_SECRET
 
 import { User } from './databases'
 
-export default uid => {
+const configurator = uid => {
   return new Promise((resolve, reject) => {
     User.findById(uid)
       .then(instance => {
@@ -21,3 +21,5 @@ export default uid => {
       .catch(reject)
   })
 }
+
+export default configurator
