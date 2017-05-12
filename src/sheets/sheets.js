@@ -1,16 +1,24 @@
 import express from 'express'
 import google from 'googleapis'
-import firebase from '../firebase'
 import authenticate from '../authenticate'
-import configurator from '../configurator'
+import { firebase as firebaseConfig } from '../configurator'
 
 const router = express.Router()
 const sheets = google.sheets('v4')
-const db = firebase.database()
 
-const getSheets = spreadsheetId => {
+const oauth2Client = new google.auth.OAuth2(
+  '270478801405-t30eudrual340fs3tuf44optp4skif5a.apps.googleusercontent.com',
+  '327Z7fZ-TtRsgaJTeZexRwpI',
+  'http://localhost:9001/sheets/authorised'
+)
+
+const getSheets = ({ exporter }) => {
+  const spreadsheetId = exporter.spreadsheetId
+
+  oauth2Client.setCredentials(exporter.ramptonTokens)
+
   return new Promise((resolve, reject) => {
-    sheets.spreadsheets.get({ spreadsheetId }, (err, response) => {
+    sheets.spreadsheets.get({ spreadsheetId, auth: oauth2Client }, (err, response) => {
       if (err) return reject(err)
 
       resolve(response)
@@ -18,25 +26,22 @@ const getSheets = spreadsheetId => {
   })
 }
 
-const sheetId = ({ uid }) => {
-  const sheetIdRef = db.ref(`users/${uid}/exporter/spreadsheetId`)
-
-  return new Promise((resolve, reject) => {
-    sheetIdRef.once('value', sheetId => {
-      resolve(sheetId.val())
-    })
-  })
-}
-
 router.get('/', authenticate, (req, res) => {
-  configurator(req.params.uid)
-    .then(sheetId)
+  firebaseConfig(req.params.uid)
     .then(getSheets)
     .then(result => res.send(result))
     .catch(err => {
       console.log('err', err)
       res.send({ code: 503, err })
     })
+})
+
+router.get('/authorised', (req, res) => {
+  oauth2Client.getToken(req.query.code, (err, tokens) => {
+    if (err) return res.send({ code: 503, err })
+
+    res.send({ tokens })
+  })
 })
 
 export default router
