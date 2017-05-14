@@ -4,7 +4,7 @@ import configurator from '../configurator'
 import get from './get'
 import refresh from './refresh'
 
-const getTransactions = ({ uid, monzo, user }, from, to) => {
+export const getTransactions = ({ uid, monzo, user }, from, to) => {
   return new Promise((resolve, reject) => {
     get(monzo, from, to)
       .then(resolve)

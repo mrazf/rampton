@@ -1,5 +1,7 @@
 import admin from 'firebase-admin'
 
+admin.database.enableLogging(true)
+
 export default admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,

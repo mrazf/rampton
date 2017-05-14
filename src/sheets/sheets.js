@@ -6,7 +6,7 @@ import { firebase as firebaseConfig } from '../configurator'
 const router = express.Router()
 const sheets = google.sheets('v4')
 
-const oauth2Client = new google.auth.OAuth2(
+export const oauth2Client = new google.auth.OAuth2(
   '270478801405-t30eudrual340fs3tuf44optp4skif5a.apps.googleusercontent.com',
   '327Z7fZ-TtRsgaJTeZexRwpI',
   'http://localhost:9001/sheets/authorised'
