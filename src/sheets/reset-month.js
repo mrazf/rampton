@@ -5,7 +5,7 @@ import { oauth2Client } from './sheets'
 
 const sheets = google.sheets('v4')
 
-const transform = transactions => {
+const transform = ({ config, transactions }) => {
   return new Promise((resolve, reject) => {
     const includedTransactions = transactions.filter(t => t.include_in_spending)
     const transformed = includedTransactions.map(t => {
@@ -20,15 +20,30 @@ const transform = transactions => {
       ]
     })
 
-    resolve(transformed)
+    resolve({ config, transactions: transformed })
+  })
+}
+
+const clear = ({ config, transactions }) => {
+  console.log(config.exporter)
+  const request = {
+    spreadsheetId: '',
+    range: ''
+  }
+
+  return new Promise((resolve, reject) => {
+    sheets.spreadsheets.values.clear(request, (err, response) => {
+      if (err) reject(err)
+    })
   })
 }
 
 const resetMonth = uid => {
   return new Promise((resolve, reject) => {
     configurator(uid)
-      .then(config => getTransactions(config))
-      .then(result => transform(result.transactions))
+      .then(getTransactions)
+      .then(transform)
+      .then(clear)
       .then(resolve)
       .catch(err => {
         console.log(err)

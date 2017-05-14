@@ -4,16 +4,18 @@ import configurator from '../configurator'
 import get from './get'
 import refresh from './refresh'
 
-export const getTransactions = ({ uid, monzo, user }, from, to) => {
+export const getTransactions = (config, from, to) => {
+  const { uid, monzo, user } = config
+
   return new Promise((resolve, reject) => {
     get(monzo, from, to)
-      .then(resolve)
+      .then(result => resolve({ ...result, config }))
       .catch(err => {
         console.warn(`Get transactions failed with ${err}, refreshing and retrying`)
 
         refresh({ uid, monzo, user })
           .then(({ monzo }) => get(monzo, from, to))
-          .then(resolve)
+          .then(result => resolve({ ...result, config }))
           .catch(reject)
       })
   })

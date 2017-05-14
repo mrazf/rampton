@@ -25,10 +25,7 @@
     "express": "^4.15.2",
     "firebase-admin": "^4.1.3",
     "googleapis": "^19.0.0",
-    "pg": "^6.1.5",
-    "pg-hstore": "^2.3.2",
     "request": "^2.81.0",
-    "sequelize": "^3.30.4",
     "winston": "^2.3.1"
   },
   "devDependencies": {

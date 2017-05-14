@@ -1,6 +1,5 @@
 import {} from 'dotenv/config'
 import './firebase'
-import './databases'
 import app from './app'
 
 app.set('port', (process.env.PORT || 9001))
