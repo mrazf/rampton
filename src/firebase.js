@@ -1,6 +1,10 @@
 import admin from 'firebase-admin'
 
-admin.database.enableLogging(true)
+admin.database.enableLogging(log => {
+  if (log.indexOf('event') === -1) return
+
+  console.info(`FIREBASE DATABASE ${log}`)
+})
 
 export default admin.initializeApp({
   credential: admin.credential.cert({
