@@ -3,8 +3,7 @@ import google from 'googleapis'
 import authenticate from '../authenticate'
 import { firebase as firebaseConfig } from '../configurator'
 
-const router = express.Router()
-const sheets = google.sheets('v4')
+export const sheets = google.sheets('v4')
 
 export const oauth2Client = new google.auth.OAuth2(
   '270478801405-t30eudrual340fs3tuf44optp4skif5a.apps.googleusercontent.com',
@@ -25,6 +24,8 @@ const getSheets = ({ exporter }) => {
     })
   })
 }
+
+const router = express.Router()
 
 router.get('/', authenticate, (req, res) => {
   firebaseConfig(req.params.uid)

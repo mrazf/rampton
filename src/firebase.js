@@ -6,7 +6,7 @@ admin.database.enableLogging(log => {
   console.info(`FIREBASE DATABASE ${log}`)
 })
 
-export default admin.initializeApp({
+const app = admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
@@ -15,3 +15,6 @@ export default admin.initializeApp({
   databaseURL: 'https://pennies-9cba3.firebaseio.com/'
 })
 
+export const database = app.database()
+
+export default app

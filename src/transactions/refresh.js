@@ -1,4 +1,5 @@
 import request from 'request'
+import { database } from '../firebase'
 
 const fresh = ({ uid, monzo, user }) => {
   return new Promise((resolve, reject) => {
@@ -25,10 +26,14 @@ const fresh = ({ uid, monzo, user }) => {
 }
 
 const save = ({ uid, monzo, user }) => {
+  const userRef = database.ref(`users/${uid}/monzoData/token`)
+
   return new Promise((resolve, reject) => {
-    user.update({ monzo_token: { ...monzo.token } })
-      .then(() => resolve({ uid, monzo, user }))
-      .catch(reject)
+    userRef.set({ ...monzo.token }, error => {
+      if (error) reject(error)
+
+      resolve({ uid, monzo, user })
+    })
   })
 }
 

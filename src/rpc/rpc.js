@@ -7,7 +7,10 @@ const router = express.Router()
 router.get('/rpc', authenticate, (req, res) => {
   resetMonth(req.params.uid)
     .then(result => res.send(result))
-    .catch(err => res.send(err))
+    .catch(err => {
+      console.error(err)
+      res.send(err)
+    })
 })
 
 export default router

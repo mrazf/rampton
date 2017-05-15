@@ -1,39 +1,85 @@
-import google from 'googleapis'
+import ramda from 'ramda'
 import configurator from '../configurator'
 import { getTransactions } from '../transactions/transactions'
-import { oauth2Client } from './sheets'
+import getSpreadsheet from './get-spreadsheet'
+import { oauth2Client, sheets } from './sheets'
 
-const sheets = google.sheets('v4')
+const transform = transactions => {
+  const includedTransactions = transactions.filter(t => t.include_in_spending)
+  const transformed = includedTransactions.map(t => {
+    return [
+      t.created,
+      t.amount / 100,
+      t.currency,
+      t.merchant.metadata.suggested_name,
+      t.category,
+      '',
+      t.merchant.address.short_formatted
+    ]
+  })
 
-const transform = ({ config, transactions }) => {
+  return transformed
+}
+
+const transactionsAndSpreadsheet = config => {
   return new Promise((resolve, reject) => {
-    const includedTransactions = transactions.filter(t => t.include_in_spending)
-    const transformed = includedTransactions.map(t => {
-      return [
-        t.created,
-        t.amount / 100,
-        t.currency,
-        t.merchant.metadata.suggested_name,
-        t.category,
-        '',
-        t.merchant.address.short_formatted
-      ]
-    })
-
-    resolve({ config, transactions: transformed })
+    return Promise.all([ getTransactions(config), getSpreadsheet(config) ])
+      .then(([ { transactions }, spreadsheet ]) => {
+        resolve({
+          config,
+          transactions: transform(transactions),
+          spreadsheet
+        })
+      })
+      .catch(reject)
   })
 }
 
-const clear = ({ config, transactions }) => {
-  console.log(config.exporter)
-  const request = {
-    spreadsheetId: '',
-    range: ''
-  }
+const clearAndReplace = ({ config, transactions, spreadsheet }) => {
+  const spreadsheetId = config.exporter.spreadsheetId
+  const sheet = ramda.find(s => s.properties.title === 'May', spreadsheet.sheets)
+  const sheetId = sheet.properties.sheetId
+
+  console.log('transactions', transactions)
+
+  return new Promise((resolve, reject) => {
+    clear(config.exporter.ramptonTokens, spreadsheetId, sheetId)
+      .then(() => replace(config.exporter.ramptonTokens, spreadsheetId, transactions))
+      .then(resolve)
+  })
+}
+
+const clear = (token, spreadsheetId, sheetId) => {
+  oauth2Client.setCredentials(token)
+
+  const request = { spreadsheetId, range: `May!A4:H`, auth: oauth2Client }
 
   return new Promise((resolve, reject) => {
     sheets.spreadsheets.values.clear(request, (err, response) => {
-      if (err) reject(err)
+      if (err) return reject(err)
+
+      resolve(response)
+    })
+  })
+}
+
+const replace = (token, spreadsheetId, values) => {
+  oauth2Client.setCredentials(token)
+
+  const request = {
+    spreadsheetId,
+    valueInputOption: 'USER_ENTERED',
+    includeValuesInResponse: true,
+    range: 'mayMonzoTransactions',
+    auth: oauth2Client,
+    resource: { values, range: 'mayMonzoTransactions' }
+  }
+
+  return new Promise((resolve, reject) => {
+    sheets.spreadsheets.values.append(request, (err, response) => {
+      if (err) return reject(err)
+
+      resolve(response)
     })
   })
 }
@@ -41,13 +87,10 @@ const clear = ({ config, transactions }) => {
 const resetMonth = uid => {
   return new Promise((resolve, reject) => {
     configurator(uid)
-      .then(getTransactions)
-      .then(transform)
-      .then(clear)
+      .then(transactionsAndSpreadsheet)
+      .then(clearAndReplace)
       .then(resolve)
-      .catch(err => {
-        console.log(err)
-      })
+      .catch(reject)
   })
 }
 
