@@ -2,6 +2,7 @@ import ramda from 'ramda'
 import configurator from '../configurator'
 import { getTransactions } from '../transactions/transactions'
 import getSpreadsheet from './get-spreadsheet'
+import { gridRange } from './a-one-converter'
 import { oauth2Client, sheets } from './sheets'
 
 const transform = transactions => {
@@ -41,19 +42,25 @@ const clearAndReplace = ({ config, transactions, spreadsheet }) => {
   const sheet = ramda.find(s => s.properties.title === 'May', spreadsheet.sheets)
   const sheetId = sheet.properties.sheetId
 
-  console.log('transactions', transactions)
-
   return new Promise((resolve, reject) => {
-    clear(config.exporter.ramptonTokens, spreadsheetId, sheetId)
+    clear(config.exporter.ramptonTokens, spreadsheet, sheetId)
       .then(() => replace(config.exporter.ramptonTokens, spreadsheetId, transactions))
       .then(resolve)
   })
 }
 
-const clear = (token, spreadsheetId, sheetId) => {
+const clear = (token, spreadsheet, sheetId) => {
   oauth2Client.setCredentials(token)
 
-  const request = { spreadsheetId, range: `May!A4:H`, auth: oauth2Client }
+  const { range } = ramda.find(n => n.name === 'mayMonzoTransactions', spreadsheet.namedRanges)
+  const clearRange = {
+    startColumnIndex: range.startColumnIndex,
+    startRowIndex: range.startRowIndex + 1,
+    endColumnIndex: range.endColumnIndex
+  }
+
+  const spreadsheetId = spreadsheet.spreadsheetId
+  const request = { spreadsheetId, range: `May!${gridRange(clearRange)}`, auth: oauth2Client }
 
   return new Promise((resolve, reject) => {
     sheets.spreadsheets.values.clear(request, (err, response) => {
