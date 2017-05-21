@@ -9,12 +9,13 @@ const transform = transactions => {
   const transformed = includedTransactions.map(t => {
     return [
       t.created,
-      t.amount / 100,
+      (t.amount / 100) * -1,
       t.currency,
       t.merchant.metadata.suggested_name,
-      t.category,
       '',
-      t.merchant.address.short_formatted
+      t.merchant.address.short_formatted,
+      t.category,
+      t.id
     ]
   })
 

@@ -1,6 +1,6 @@
 import express from 'express'
 import request from 'request'
-import authenticate from '../authenticate'
+import authenticate from '../middleware/authenticate'
 import configurator from '../configurator'
 
 const router = express.Router()

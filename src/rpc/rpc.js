@@ -1,6 +1,6 @@
 import express from 'express'
 import resetMonth from '../sheets/reset-month'
-import authenticate from '../authenticate'
+import authenticate from '../middleware/authenticate'
 
 const router = express.Router()
 

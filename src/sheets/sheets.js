@@ -1,6 +1,6 @@
 import express from 'express'
 import google from 'googleapis'
-import authenticate from '../authenticate'
+import authenticate from '../middleware/authenticate'
 import { firebase as firebaseConfig } from '../configurator'
 
 export const sheets = google.sheets('v4')

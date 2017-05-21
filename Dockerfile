@@ -10,7 +10,6 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app/
 RUN yarn install
 
-RUN ls && ls node_modules
 COPY . /usr/src/app
 
 EXPOSE 9001

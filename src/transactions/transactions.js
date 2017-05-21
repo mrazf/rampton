@@ -1,5 +1,5 @@
 import express from 'express'
-import authenticate from '../authenticate'
+import authenticate from '../middleware/authenticate'
 import configurator from '../configurator'
 import get from './get'
 import refresh from './refresh'
