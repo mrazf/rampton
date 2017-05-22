@@ -1,4 +1,4 @@
-import ramda from 'ramda'
+import * as R from 'ramda'
 import configurator from '../configurator'
 import { getTransactions } from '../transactions/transactions'
 import getSpreadsheet from './get-spreadsheet'
@@ -6,11 +6,19 @@ import { gridRange } from './a-one-converter'
 import { oauth2Client, sheets } from './sheets'
 
 const bestMerchant = transaction => {
+  if (!R.isEmpty(transaction.counterparty)) {
+    return transaction.description
+  }
+
   if (transaction.merchant.metadata && transaction.merchant.metadata.suggested_name) {
     return transaction.merchant.metadata.suggested_name
   }
 
   return transaction.merchant.name
+}
+
+const bestAddress = transaction => {
+  return transaction.merchant ? transaction.merchant.address.short_formatted : ''
 }
 
 const transform = transactions => {
@@ -22,7 +30,7 @@ const transform = transactions => {
       t.currency,
       bestMerchant(t),
       '',
-      t.merchant.address.short_formatted,
+      bestAddress(t),
       t.category,
       t.id
     ]
@@ -47,7 +55,7 @@ const transactionsAndSpreadsheet = config => {
 
 const clearAndReplace = ({ config, transactions, spreadsheet }) => {
   const spreadsheetId = config.exporter.spreadsheetId
-  const sheet = ramda.find(s => s.properties.title === 'May', spreadsheet.sheets)
+  const sheet = R.find(s => s.properties.title === 'May', spreadsheet.sheets)
   const sheetId = sheet.properties.sheetId
 
   return new Promise((resolve, reject) => {
@@ -60,7 +68,7 @@ const clearAndReplace = ({ config, transactions, spreadsheet }) => {
 const clear = (token, spreadsheet, sheetId) => {
   oauth2Client.setCredentials(token)
 
-  const { range } = ramda.find(n => n.name === 'mayMonzoTransactions', spreadsheet.namedRanges)
+  const { range } = R.find(n => n.name === 'mayMonzoTransactions', spreadsheet.namedRanges)
   const clearRange = {
     startColumnIndex: range.startColumnIndex,
     startRowIndex: range.startRowIndex + 1,
