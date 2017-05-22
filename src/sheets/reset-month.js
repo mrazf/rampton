@@ -5,6 +5,14 @@ import getSpreadsheet from './get-spreadsheet'
 import { gridRange } from './a-one-converter'
 import { oauth2Client, sheets } from './sheets'
 
+const bestMerchant = transaction => {
+  if (transaction.merchant.metadata && transaction.merchant.metadata.suggested_name) {
+    return transaction.merchant.metadata.suggested_name
+  }
+
+  return transaction.merchant.name
+}
+
 const transform = transactions => {
   const includedTransactions = transactions.filter(t => t.include_in_spending)
   const transformed = includedTransactions.map(t => {
@@ -12,7 +20,7 @@ const transform = transactions => {
       t.created,
       (t.amount / 100) * -1,
       t.currency,
-      t.merchant.metadata.suggested_name,
+      bestMerchant(t),
       '',
       t.merchant.address.short_formatted,
       t.category,
