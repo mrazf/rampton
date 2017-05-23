@@ -3,6 +3,7 @@ import authenticate from '../middleware/authenticate'
 import configurator from '../configurator'
 import get from './get'
 import refresh from './refresh'
+import transform from './transform'
 
 export const getTransactions = (config, from, to) => {
   const { uid, monzo, user } = config
@@ -26,7 +27,11 @@ const router = express.Router()
 router.get('/', authenticate, (req, res) => {
   configurator(req.params.uid)
     .then(config => getTransactions(config, req.query.from, req.query.to))
-    .then(result => res.send(result))
+    .then(result => {
+      const transactions = transform(result.transactions)
+
+      res.send({ transactions })
+    })
     .catch(err => {
       res.send({ code: 503, err })
     })
