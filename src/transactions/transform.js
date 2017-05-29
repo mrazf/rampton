@@ -24,7 +24,7 @@ const transform = transactions => {
       dateTime: t.created,
       amount: (t.amount / 100) * -1,
       merchant: bestMerchant(t),
-      category: '',
+      categoryId: R.pathOr(null, ['metadata', 'category'], t),
       address: bestAddress(t),
       monzoCategory: t.category,
       id: t.id

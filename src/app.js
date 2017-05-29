@@ -12,7 +12,7 @@ const app = express()
 app.use(bodyParser.json())
 app.use(cors())
 
-app.use('/transactions', transactions)
+app.use(transactions)
 app.use('/sheets', sheets)
 
 app.use('/monzo-transactions', monzoTransactions)
