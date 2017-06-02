@@ -16,20 +16,16 @@ const bestAddress = transaction => {
   return transaction.merchant ? transaction.merchant.address.short_formatted : ''
 }
 
-const transform = transactions => {
-  const includedTransactions = transactions.filter(t => t.include_in_spending)
-
-  return includedTransactions.map(t => {
-    return {
-      dateTime: t.created,
-      amount: (t.amount / 100) * -1,
-      merchant: bestMerchant(t),
-      categoryId: R.pathOr(null, ['metadata', 'category'], t),
-      address: bestAddress(t),
-      monzoCategory: t.category,
-      id: t.id
-    }
-  })
+const transform = transaction => {
+  return {
+    dateTime: transaction.created,
+    amount: (transaction.amount / 100) * -1,
+    merchant: bestMerchant(transaction),
+    categoryId: R.pathOr(null, ['metadata', 'category'], transaction),
+    address: bestAddress(transaction),
+    monzoCategory: transaction.category,
+    id: transaction.id
+  }
 }
 
 export default transform
