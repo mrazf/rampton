@@ -37,6 +37,8 @@ router.get('/transactions', authenticate, (req, res) => {
       res.send({ transactions })
     })
     .catch(err => {
+      console.error(err)
+
       res.send({ code: 503, err })
     })
 })
@@ -44,7 +46,7 @@ router.get('/transactions', authenticate, (req, res) => {
 const updateTransaction = (config, transactionId, category) => {
   const { monzo } = config
 
-  const url = `https://api.monzo.com/transactions/${transactionId}`
+  const url = `https://api.monzo.com/transactions/${transactionId}?expand[]=merchant`
   const headers = { Authorization: `Bearer ${monzo.token.access_token}` }
   const form = { metadata: { category } }
 
@@ -78,6 +80,8 @@ router.post('/transactions/:id', authenticate, (req, res) => {
       res.send({ transaction })
     })
     .catch(err => {
+      console.error(err)
+
       res.send({ code: 503, err })
     })
 })
