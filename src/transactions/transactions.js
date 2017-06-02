@@ -61,7 +61,7 @@ const updateTransaction = (config, transactionId, category) => {
         return reject(response)
       }
 
-      resolve(response)
+      resolve(response.transaction)
     })
   })
 }
