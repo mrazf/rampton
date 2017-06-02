@@ -7,6 +7,8 @@ import get from './get'
 import refresh from './refresh'
 import transform from './monzo-to-pennies-transaction'
 
+const transformMultiple = R.map(transform)
+
 export const getTransactions = (config, from, to) => {
   const { uid, monzo, user } = config
 
@@ -30,7 +32,7 @@ router.get('/transactions', authenticate, (req, res) => {
   configurator(req.params.uid)
     .then(config => getTransactions(config, req.query.from, req.query.to))
     .then(result => {
-      const transactions = transform(result.transactions)
+      const transactions = transformMultiple(result.transactions)
 
       res.send({ transactions })
     })
@@ -67,13 +69,11 @@ const updateTransaction = (config, transactionId, category) => {
   })
 }
 
-const transformMultiple = R.map(transform)
-
 router.post('/transactions/:id', authenticate, (req, res) => {
   configurator(req.params.uid)
     .then(config => updateTransaction(config, req.params.id, req.body.categoryId))
     .then(monzoTransaction => {
-      const transaction = transformMultiple(monzoTransaction)
+      const transaction = transform(monzoTransaction)
 
       res.send({ transaction })
     })
