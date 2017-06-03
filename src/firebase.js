@@ -1,9 +1,19 @@
 import admin from 'firebase-admin'
 
-admin.database.enableLogging(log => {
-  if (log.indexOf('event') === -1) return
+const eventPrefix = 'event: '
+const valuePrefix = ':value:'
 
-  console.info(`FIREBASE DATABASE ${log}`)
+admin.database.enableLogging(logString => {
+  const eventStart = logString.indexOf(eventPrefix)
+
+  if (eventStart === -1) return
+
+  const eventPrefixEnd = eventStart + eventPrefix.length
+  const eventEnd = logString.indexOf(valuePrefix)
+
+  const log = logString.substring(eventPrefixEnd, eventEnd)
+
+  console.info(`FIREBASE DATABASE event: ${log}`)
 })
 
 const app = admin.initializeApp({
