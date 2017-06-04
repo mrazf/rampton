@@ -19,6 +19,7 @@ const bestAddress = transaction => {
 const transform = transaction => {
   return {
     dateTime: transaction.created,
+    currency: transaction.currency,
     amount: (transaction.amount / 100) * -1,
     merchant: bestMerchant(transaction),
     categoryId: R.pathOr(null, ['metadata', 'category'], transaction),

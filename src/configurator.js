@@ -20,7 +20,8 @@ const configurator = uid => {
             clientSecret: monzoClientSecret,
             ...user.monzoData
           },
-          exporter: { ...user.exporter }
+          exporter: { ...user.exporter },
+          categories: { ...user.categories }
         })
       },
       reject

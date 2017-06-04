@@ -9,6 +9,7 @@ router.post('/rpc', authenticate, (req, res) => {
     .then(result => res.send(result))
     .catch(err => {
       console.error(err)
+
       res.send(err)
     })
 })
