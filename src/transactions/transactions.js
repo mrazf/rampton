@@ -1,13 +1,10 @@
 import express from 'express'
 import request from 'request'
-import * as R from 'ramda'
 import authenticate from '../middleware/authenticate'
 import configurator from '../configurator'
+import transform from './monzo-to-pennies-transaction'
 import get from './get'
 import refresh from './refresh'
-import transform from './monzo-to-pennies-transaction'
-
-const transformMultiple = R.map(transform)
 
 export const getTransactions = (config, from, to) => {
   const { uid, monzo, user } = config
@@ -32,7 +29,7 @@ router.get('/transactions', authenticate, (req, res) => {
   configurator(req.params.uid)
     .then(config => getTransactions(config, req.query.from, req.query.to))
     .then(result => {
-      const transactions = transformMultiple(result.transactions)
+      const transactions = result.transactions
 
       res.send({ transactions })
     })

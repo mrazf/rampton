@@ -1,5 +1,9 @@
+import * as R from 'ramda'
 import moment from 'moment'
 import request from 'request'
+import transform from './monzo-to-pennies-transaction'
+
+const transformMultiple = R.map(transform)
 
 module.exports = (monzo, from, to) => {
   const since = from || moment.utc().subtract(2, 'month').endOf('month').format()
@@ -33,7 +37,7 @@ module.exports = (monzo, from, to) => {
 
       console.info(`GET https://api.monzo.com/transactions got ${transactions.length} transactions`)
 
-      return resolve({ transactions })
+      return resolve({ transactions: transformMultiple(transactions) })
     })
   })
 }
