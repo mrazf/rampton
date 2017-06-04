@@ -1,11 +1,11 @@
 import express from 'express'
-import resetMonth from '../sheets/reset-month'
+import refreshMonth from '../sheets/refresh-month'
 import authenticate from '../middleware/authenticate'
 
 const router = express.Router()
 
-router.get('/rpc', authenticate, (req, res) => {
-  resetMonth(req.params.uid)
+router.post('/rpc', authenticate, (req, res) => {
+  refreshMonth(req.params.uid, req.body.params)
     .then(result => res.send(result))
     .catch(err => {
       console.error(err)

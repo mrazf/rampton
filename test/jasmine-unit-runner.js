@@ -8,7 +8,8 @@ process.env.FIREBASE_PRIVATE_KEY = 'c'
 
 jasmine.loadConfig({
   'spec_files': [
-    'src/**/*-test.js'
+    'src/**/*-test.js',
+    'src/**/*.test.js'
   ],
   'stopSpecOnExpectationFailure': false,
   'random': false
