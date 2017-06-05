@@ -2,6 +2,7 @@ import express from 'express'
 import request from 'request'
 import authenticate from '../middleware/authenticate'
 import configurator from '../configurator'
+import updateCategory from '../sheets/update-category'
 import transform from './monzo-to-pennies-transaction'
 import get from './get'
 import refresh from './refresh'
@@ -63,17 +64,16 @@ const updateTransaction = (config, transactionId, category) => {
         return reject(response)
       }
 
-      resolve(response.transaction)
+      resolve({ config, transaction: transform(response.transaction) })
     })
   })
 }
 
 router.post('/transactions/:id', authenticate, (req, res) => {
   configurator(req.params.uid)
-    .then(config => updateTransaction(config, req.params.id, req.body.categoryId))
-    .then(monzoTransaction => {
-      const transaction = transform(monzoTransaction)
-
+    .then(config => updateTransaction(config, req.params.id, req.body.transaction.categoryId))
+    .then(({ config, transaction }) => updateCategory(config, { transaction, metadata: req.body.metadata }))
+    .then(transaction => {
       res.send({ transaction })
     })
     .catch(err => {

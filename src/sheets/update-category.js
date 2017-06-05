@@ -15,15 +15,19 @@ export const updateCategoryRequest = (spreadsheetId, { transaction, metadata }, 
     valueInputOption: 'RAW',
     resource: {
       range,
-      values: [ category ]
+      values: [
+        [ category ]
+      ]
     }
   }
 }
 
-const updateCategory = (token, spreadsheetId, updateRequest, categories) => {
-  oauth2Client.setCredentials(token)
+const updateCategory = (config, updateRequest, categories) => {
+  const { spreadsheetId, ramptonTokens } = config.exporter
+
+  oauth2Client.setCredentials(ramptonTokens)
   const request = {
-    ...updateCategoryRequest(spreadsheetId, updateRequest, categories),
+    ...updateCategoryRequest(spreadsheetId, updateRequest, config.categories),
     auth: oauth2Client
   }
 
@@ -31,7 +35,7 @@ const updateCategory = (token, spreadsheetId, updateRequest, categories) => {
     sheets.spreadsheets.values.update(request, (err, response) => {
       if (err) reject(err)
 
-      resolve()
+      resolve(updateRequest.transaction)
     })
   })
 }

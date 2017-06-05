@@ -23,6 +23,6 @@ describe('Sheet update', () => {
     expect(request.range).toEqual('Jun!E3')
     expect(request.valueInputOption).toEqual('RAW')
     expect(request.resource.range).toEqual('Jun!E3')
-    expect(request.resource.values).toEqual([ 'Tennis' ])
+    expect(request.resource.values).toEqual([[ 'Tennis' ]])
   })
 })
