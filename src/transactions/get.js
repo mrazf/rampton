@@ -28,7 +28,7 @@ module.exports = (monzo, from, to) => {
       }
 
       const allTransactions = response.transactions || []
-      const transactions = allTransactions.filter(t => t.include_in_spending).reverse()
+      const transactions = allTransactions.filter(t => t.include_in_spending)
 
       if (!transactions.length) {
         console.info('GET https://api.monzo.com/transactions got no transactions')
