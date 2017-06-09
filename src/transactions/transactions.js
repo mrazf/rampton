@@ -1,8 +1,9 @@
 import express from 'express'
 import request from 'request'
+import moment from 'moment'
 import authenticate from '../middleware/authenticate'
+import { transactionsAndSpreadsheet, clearAndReplace } from '../sheets/refresh-month'
 import configurator from '../configurator'
-import updateCategory from '../sheets/update-category'
 import transform from './monzo-to-pennies-transaction'
 import get from './get'
 import refresh from './refresh'
@@ -70,12 +71,14 @@ const updateTransaction = (config, transactionId, category) => {
 }
 
 router.post('/transactions/:id', authenticate, (req, res) => {
+  const transaction = req.body.transaction
+  const monthIndex = moment(transaction.dateTime).month()
+
   configurator(req.params.uid)
     .then(config => updateTransaction(config, req.params.id, req.body.transaction.categoryId))
-    .then(({ config, transaction }) => updateCategory(config, { transaction, metadata: req.body.metadata }))
-    .then(transaction => {
-      res.send({ transaction })
-    })
+    .then(({ config }) => transactionsAndSpreadsheet(config, monthIndex))
+    .then(results => clearAndReplace(results, monthIndex))
+    .then(() => res.send({ transaction }))
     .catch(err => {
       console.error(err)
 

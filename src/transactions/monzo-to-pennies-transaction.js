@@ -22,7 +22,7 @@ const transform = transaction => {
     currency: transaction.currency,
     amount: (transaction.amount / 100) * -1,
     merchant: bestMerchant(transaction),
-    categoryId: R.pathOr(null, ['metadata', 'category'], transaction),
+    categoryId: R.pathOr('not-set', ['metadata', 'category'], transaction),
     address: bestAddress(transaction),
     monzoCategory: transaction.category,
     id: transaction.id

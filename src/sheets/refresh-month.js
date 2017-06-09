@@ -5,7 +5,7 @@ import getSpreadsheet from './get-spreadsheet'
 import clear from './clear'
 import replace from './replace'
 
-const transactionsAndSpreadsheet = (config, monthNumber) => {
+export const transactionsAndSpreadsheet = (config, monthNumber) => {
   const { from, to } = convert(monthNumber)
 
   return new Promise((resolve, reject) => {
@@ -21,7 +21,7 @@ const transactionsAndSpreadsheet = (config, monthNumber) => {
   })
 }
 
-const clearAndReplace = ({ config, transactions, spreadsheet }, month) => {
+export const clearAndReplace = ({ config, transactions, spreadsheet }, month) => {
   const { spreadsheetId, ramptonTokens } = config.exporter
   const { categories } = config
 
