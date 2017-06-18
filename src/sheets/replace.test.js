@@ -1,5 +1,7 @@
 import { replaceRequest } from './replace'
 
+jest.mock('../firebase')
+
 describe('Sheets replace request', () => {
   it('returns the expected request object', () => {
     const transaction = {

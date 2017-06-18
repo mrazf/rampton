@@ -1,5 +1,7 @@
 import { updateCategoryRequest } from './update-category'
 
+jest.mock('../firebase')
+
 const spreadsheetId = 'id_123'
 const transaction = {
   'dateTime': '2017-06-03T22:18:16.957Z',

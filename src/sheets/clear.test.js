@@ -1,5 +1,7 @@
 import { clearRequest } from './clear'
 
+jest.mock('../firebase')
+
 describe('Sheets clearRequest', () => {
   const spreadsheet = {
     spreadsheetId: 'a1b2c3',

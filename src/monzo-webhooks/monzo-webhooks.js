@@ -2,6 +2,8 @@ import express from 'express'
 import request from 'request'
 import authenticate from '../middleware/authenticate'
 import configurator from '../configurator'
+import userFromAccountId from './user-from-account-id'
+import transformAndWrite from './transform-and-write'
 
 const router = express.Router()
 
@@ -31,10 +33,21 @@ const getHooks = ({ monzo }) => {
   })
 }
 
-router.get('/', authenticate, (req, res) => {
+router.get('/monzo-webhooks', authenticate, (req, res) => {
   configurator(req.params.uid)
     .then(getHooks)
     .then(result => res.send(result))
+    .catch(err => {
+      res.send({ code: 503, err })
+    })
+})
+
+router.post('/monzo-webhook', (req, res) => {
+  userFromAccountId(req.body.data.account_id)
+    .then(user => transformAndWrite(user, req.body.data))
+    .then(() => {
+      res.send(200, req.body)
+    })
     .catch(err => {
       res.send({ code: 503, err })
     })

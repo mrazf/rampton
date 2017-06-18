@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "babel-watch src/index.js",
     "lint": "standard src/**/*.js test/**/*.js",
-    "test:unit": "babel-node test/jasmine-unit-runner.js",
+    "test:unit": "jest",
     "build": "babel src --out-dir build",
     "start": "node ./build",
     "heroku-postbuild": "npm run build"
@@ -32,6 +32,9 @@
   "devDependencies": {
     "babel-watch": "^2.0.6",
     "jasmine": "^2.5.3",
+    "jest": "^20.0.4",
+    "memory-cache": "^0.1.6",
+    "nock": "^9.0.13",
     "nodemon": "^1.11.0",
     "pre-commit": "^1.2.2",
     "standard": "^9.0.1",
@@ -47,12 +50,16 @@
   },
   "standard": {
     "globals": [
+      "jest",
       "describe",
       "it",
-      "expect"
+      "expect",
+      "beforeEach",
+      "afterEach"
     ]
   },
   "pre-commit": [
-    "lint", "test:unit"
+    "lint",
+    "test:unit"
   ]
 }

@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 import transactions from './transactions/transactions'
 import sheets from './sheets/sheets'
 import monzoTransactions from './monzo-transactions/monzo-transactions'
-import webhooks from './monzo-webhooks/webhooks'
+import monzoWebhooks from './monzo-webhooks/monzo-webhooks'
 import rpc from './rpc/rpc'
 
 const app = express()
@@ -16,7 +16,7 @@ app.use(transactions)
 app.use('/sheets', sheets)
 
 app.use('/monzo-transactions', monzoTransactions)
-app.use('/monzo-webhooks', webhooks)
+app.use(monzoWebhooks)
 
 app.use(rpc)
 
