@@ -1,6 +1,6 @@
 import { userFromAccountId } from './user-from-account-id'
 
-jest.mock('../firebase')
+jest.mock('../database')
 
 const stubUsers = {
   a: { monzoData: { accountId: 'accountIdA' } },

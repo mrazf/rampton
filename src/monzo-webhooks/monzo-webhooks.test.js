@@ -1,10 +1,11 @@
 import request from 'supertest'
 import nock from 'nock'
-import { database } from '../firebase'
+import database from '../database'
 import app from '../app'
 import transactionCreated from './monzo-webhooks.test.stub'
 
 jest.mock('../firebase')
+jest.mock('../database')
 
 describe('Monzo webhooks', () => {
   beforeEach(() => {

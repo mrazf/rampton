@@ -46,10 +46,10 @@ router.post('/monzo-webhook', (req, res) => {
   userFromAccountId(req.body.data.account_id)
     .then(user => transformAndWrite(user, req.body.data))
     .then(() => {
-      res.send(200, req.body)
+      res.status(200).send(req.body)
     })
     .catch(err => {
-      res.send({ code: 503, err })
+      res.status(503).send({ code: 503, err })
     })
 })
 

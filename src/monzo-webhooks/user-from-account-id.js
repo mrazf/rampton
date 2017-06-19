@@ -1,5 +1,5 @@
 import { keys, find, pathEq } from 'ramda'
-import { database } from '../firebase'
+import database from '../database'
 
 export const userFromAccountId = (accountId, users) => {
   const insideIn = keys(users).map(uid => ({ ...users[uid], uid }))
@@ -9,8 +9,10 @@ export const userFromAccountId = (accountId, users) => {
 
 export default accountId => {
   return new Promise((resolve, reject) => {
-    const users = database.get('users')
-
-    resolve(userFromAccountId(accountId, users))
+    database.get('users')
+      .then(users => {
+        resolve(userFromAccountId(accountId, users))
+      })
+      .catch(reject)
   })
 }
