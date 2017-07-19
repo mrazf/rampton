@@ -1,12 +1,11 @@
 import express from 'express'
-import request from 'request'
 import moment from 'moment'
 import authenticate from '../middleware/authenticate'
 import { transactionsAndSpreadsheet, clearAndReplace } from '../sheets/refresh-month'
 import configurator from '../configurator'
-import transform from './monzo-to-pennies-transaction'
 import get from './get'
 import refresh from './refresh'
+import updateTransaction from './update-transaction'
 
 export const getTransactions = (config, from, to) => {
   const { uid, monzo, user } = config
@@ -41,34 +40,6 @@ router.get('/transactions', authenticate, (req, res) => {
       res.send({ code: 503, err })
     })
 })
-
-const updateTransaction = (config, transactionId, category) => {
-  const { monzo } = config
-
-  const url = `https://api.monzo.com/transactions/${transactionId}?expand[]=merchant`
-  const headers = { Authorization: `Bearer ${monzo.token.access_token}` }
-  const form = { metadata: { category } }
-
-  return new Promise((resolve, reject) => {
-    console.info(`PATCH ${url}`)
-    request.patch(url, { headers, form }, (err, res, body) => {
-      if (err) {
-        console.error(`PATCH ${url} errored with ${err} at ${err.stack}`)
-
-        return reject(err)
-      }
-
-      const response = JSON.parse(body)
-      if (response.error) {
-        console.error(response)
-
-        return reject(response)
-      }
-
-      resolve({ config, transaction: transform(response.transaction) })
-    })
-  })
-}
 
 router.post('/transactions/:id', authenticate, (req, res) => {
   const transaction = req.body.transaction
