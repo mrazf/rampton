@@ -1,10 +1,18 @@
-import admin from 'firebase-admin'
+import authenticateVia from './firebase'
+
+const authPrefix = 'Bearer: '
+const authPrefixLength = authPrefix.length
 
 export default (req, res, next) => {
-  const token = req.headers.authorization.substring('Bearer: '.length)
+  let token = null
+  try {
+    token = req.headers.authorization.substring(authPrefixLength)
+  } catch (err) {
+    res.send(401, { code: 401, error: 'Invalid authorization header' })
+  }
 
-  admin.auth().verifyIdToken(token)
-    .then(({ uid }) => {
+  authenticateVia(token)
+    .then(uid => {
       req.params.uid = uid
       next()
     })
