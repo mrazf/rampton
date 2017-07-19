@@ -1,8 +1,14 @@
+import express from 'express'
 import request from 'supertest'
+import bodyParser from 'body-parser'
 import nock from 'nock'
 import database from '../database'
-import app from '../app'
+import routes from './monzo-webhooks'
 import transactionCreated from './monzo-webhooks.test.stub'
+
+const app = express()
+app.use(bodyParser.json())
+app.use(routes)
 
 jest.mock('../firebase')
 jest.mock('../database')
