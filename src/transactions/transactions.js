@@ -46,7 +46,7 @@ router.post('/transactions/:id', authenticate, (req, res) => {
   const monthIndex = moment(transaction.dateTime).month()
 
   configurator(req.params.uid)
-    .then(config => updateTransaction(config, req.params.id, req.body.transaction.categoryId))
+    .then(config => updateTransaction(config, req.params.id, req.body.transaction))
     .then(({ config }) => transactionsAndSpreadsheet(config, monthIndex))
     .then(results => clearAndReplace(results, monthIndex))
     .then(() => res.send({ transaction }))

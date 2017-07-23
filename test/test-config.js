@@ -8,6 +8,8 @@ process.env.FIREBASE_PROJECT_ID = 'pennies-9cba3'
 process.env.FIREBASE_CLIENT_EMAIL = 'b'
 process.env.FIREBASE_PRIVATE_KEY = 'c'
 
+console.info = () => {}
+
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,

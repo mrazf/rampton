@@ -82,6 +82,8 @@ router.post('/monzo-webhook', (req, res) => {
       res.status(200).send(req.body)
     })
     .catch(err => {
+      console.error(err)
+
       res.status(503).send({ code: 503, err })
     })
 })

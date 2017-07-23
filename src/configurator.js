@@ -1,18 +1,12 @@
-import firebaseApp from './firebase'
+import database from './database'
 
 const monzoClientId = process.env.MONZO_CLIENT_ID
 const monzoClientSecret = process.env.MONZO_CLIENT_SECRET
-const db = firebaseApp.database()
 
 const configurator = uid => {
-  const userRef = db.ref(`users/${uid}`)
-
   return new Promise((resolve, reject) => {
-    userRef.once(
-      'value',
-      userSnapshot => {
-        const user = userSnapshot.val()
-
+    database.get(`users/${uid}`)
+      .then(user => {
         resolve({
           uid,
           monzo: {
@@ -23,9 +17,8 @@ const configurator = uid => {
           exporter: { ...user.exporter },
           categories: { ...user.categories }
         })
-      },
-      reject
-    )
+      })
+      .catch(reject)
   })
 }
 

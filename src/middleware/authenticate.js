@@ -1,4 +1,4 @@
-import authenticateVia from './firebase'
+import authenticateFirebase from './authenticate-firebase'
 
 const authPrefix = 'Bearer: '
 const authPrefixLength = authPrefix.length
@@ -11,7 +11,7 @@ export default (req, res, next) => {
     res.send(401, { code: 401, error: 'Invalid authorization header' })
   }
 
-  authenticateVia(token)
+  authenticateFirebase(token)
     .then(uid => {
       req.params.uid = uid
       next()
