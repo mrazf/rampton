@@ -75,7 +75,20 @@ router.post('/monzo-webhooks', authenticate, (req, res) => {
     .then(result => res.send(200, result))
 })
 
-router.post('/monzo-webhook', (req, res) => {
+const processTransaction = (req, res, next) => {
+  const {
+    include_in_spending: includeInSpending,
+    decline_reason: declineReason
+  } = req.body.data
+
+  if (includeInSpending === false) {
+    return res.status(200).send({ declineReason })
+  }
+
+  next()
+}
+
+router.post('/monzo-webhook', processTransaction, (req, res) => {
   userFromAccountId(req.body.data.account_id)
     .then(user => transformAndWrite(user, req.body.data))
     .then(() => {

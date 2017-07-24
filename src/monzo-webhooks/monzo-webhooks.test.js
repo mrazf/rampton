@@ -67,4 +67,20 @@ describe('Monzo webhooks', () => {
         sheetsRequest.done()
       })
   })
+
+  it('200s and returns an description why transaction wasnt processed', () => {
+    const rejectedTransaction = {
+      data: {
+        include_in_spending: false,
+        decline_reason: 'INVALID_CVC'
+      }
+    }
+
+    return request(app)
+      .post('/monzo-webhook')
+      .send(rejectedTransaction)
+      .expect(200, {
+        declineReason: 'INVALID_CVC'
+      })
+  })
 })
