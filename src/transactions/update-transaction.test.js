@@ -15,8 +15,9 @@ describe('Update Transaction', () => {
       categoryId: 'new-category-id'
     }
 
+    const monzoPatchPayload = 'metadata%5Bcategory%5D=new-category-id'
     const monzoPatch = nock('https://api.monzo.com:443', { 'encodedQueryParams': true })
-      .patch('/transactions/tx_id')
+      .patch('/transactions/tx_id', monzoPatchPayload)
       .query({ 'expand': 'merchant' })
       .reply(200, {
         transaction: {

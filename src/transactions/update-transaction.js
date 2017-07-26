@@ -34,7 +34,7 @@ const updateTransaction = (config, transactionId, transaction) => {
   const headers = { Authorization: `Bearer ${monzo.token.access_token}` }
   const form = {
     metadata: {
-      category: transaction.category,
+      category: transaction.categoryId,
       split: transaction.split
     }
   }
