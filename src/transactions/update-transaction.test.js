@@ -1,3 +1,4 @@
+import nock from 'nock'
 import updateTransaction from './update-transaction'
 import InvalidTransactionError from './invalid-transaction-error'
 
@@ -6,6 +7,29 @@ describe('Update Transaction', () => {
   const config = {
     monzo: { token: { access_token: 'access_token' } }
   }
+
+  it('200s and PATCHs the transaction if the update is valid', () => {
+    expect.assertions(2)
+
+    const validTransactionUpdate = {
+      categoryId: 'new-category-id'
+    }
+
+    const monzoPatch = nock('https://api.monzo.com:443', { 'encodedQueryParams': true })
+      .patch('/transactions/tx_id')
+      .query({ 'expand': 'merchant' })
+      .reply(200, {
+        transaction: {
+          id: 'tx_id'
+        }
+      })
+
+    return updateTransaction(config, transactionId, validTransactionUpdate)
+      .then(response => {
+        expect(response.transaction.id).toEqual('tx_id')
+        expect(monzoPatch.isDone()).toEqual(true)
+      })
+  })
 
   it('errors if the split transaction is not valid', () => {
     const invalidTransactionUpdate = {

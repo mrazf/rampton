@@ -3,7 +3,7 @@ import transform from './monzo-to-pennies-transaction'
 import InvalidTransactionError from './invalid-transaction-error'
 
 const validSplit = transaction => {
-  if (!transaction.split) return true
+  if (!transaction.split) return { isValid: true }
 
   const totalSplitTransactionsValue = transaction.split.reduce((acc, t) => {
     return acc + t.value
