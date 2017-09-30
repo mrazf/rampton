@@ -3,15 +3,15 @@ import { userFromAccountId } from './user-from-account-id'
 jest.mock('../database')
 
 const stubUsers = {
-  a: { monzoData: { accountId: 'accountIdA' } },
-  b: { monzoData: { accountId: 'accountIdB' } }
+  a: { monzoData: { accountIds: ['accountIdA', 'accountIdAcurrent'] } },
+  b: { monzoData: { accountIds: ['accountIdB', 'accountIdBcurrent'] } }
 }
 
 describe('User from account id', () => {
   it('returns the correct user object from accountId and users', () => {
-    const user = userFromAccountId('accountIdB', stubUsers)
+    const user = userFromAccountId('accountIdBcurrent', stubUsers)
 
     expect(user.uid).toEqual('b')
-    expect(user.monzoData.accountId).toEqual('accountIdB')
+    expect(user.monzoData.accountIds).toEqual(['accountIdB', 'accountIdBcurrent'])
   })
 })

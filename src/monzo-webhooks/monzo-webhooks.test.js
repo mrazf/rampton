@@ -30,7 +30,7 @@ describe('Monzo webhooks', () => {
           }
         },
         monzoData: {
-          accountId: 'acc_00008gju41AHyfLUzBUk8A'
+          accountIds: ['acc_00008gju41AHyfLUzBUk8A']
         }
       }
     })

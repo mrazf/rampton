@@ -1,10 +1,22 @@
-import { keys, find, pathEq } from 'ramda'
+import { keys } from 'ramda'
 import database from '../database'
 
 export const userFromAccountId = (accountId, users) => {
-  const insideIn = keys(users).map(uid => ({ ...users[uid], uid }))
+  const userIdsByAccountIds = keys(users).reduce((acc, userId) => {
+    const accounts = users[userId].monzoData.accountIds
+    const userIdByAccounts = accounts.reduce((acc, account) => {
+      return { ...acc, [account]: userId }
+    }, {})
 
-  return find(pathEq(['monzoData', 'accountId'], accountId))(insideIn)
+    return {
+      ...acc,
+      ...userIdByAccounts
+    }
+  }, {})
+
+  const uid = userIdsByAccountIds[accountId]
+
+  return {uid, ...users[uid]}
 }
 
 export default accountId => {
