@@ -5,12 +5,7 @@ import transform from './monzo-to-pennies-transaction'
 
 const transformMultiple = R.map(transform)
 
-module.exports = (monzo, from, to) => {
-  const since = from || moment.utc().subtract(2, 'month').endOf('month').format()
-  const before = to || moment.utc().endOf('month').format()
-  const url = `https://api.monzo.com/transactions?account_id=${monzo.accountId}&expand[]=merchant&since=${since}&before=${before}`
-  const headers = { Authorization: `Bearer ${monzo.token.access_token}` }
-
+const getTransactions = (url, headers) => {
   return new Promise((resolve, reject) => {
     console.info(`GET ${url}`)
     request.get(url, { headers }, (err, res, body) => {
@@ -40,4 +35,21 @@ module.exports = (monzo, from, to) => {
       return resolve({ transactions: transformMultiple(transactions) })
     })
   })
+}
+
+module.exports = (monzo, from, to) => {
+  const since = from || moment.utc().subtract(2, 'month').endOf('month').format()
+  const before = to || moment.utc().endOf('month').format()
+  const urls = monzo.accountIds.map(id => {
+    return `https://api.monzo.com/transactions?account_id=${id}&expand[]=merchant&since=${since}&before=${before}`
+  })
+  const headers = { Authorization: `Bearer ${monzo.token.access_token}` }
+  const requests = urls.map(url => getTransactions(url, headers))
+
+  return Promise.all(requests)
+    .then(responses => {
+      return responses.reduce((acc, response) => {
+        return { transactions: [ ...response.transactions, ...acc.transactions ] }
+      }, { transactions: [] })
+    })
 }
