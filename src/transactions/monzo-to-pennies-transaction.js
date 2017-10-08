@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 
 const bestMerchant = transaction => {
-  if (!R.isEmpty(transaction.counterparty)) {
+  if (!transaction.merchant || !R.isEmpty(transaction.counterparty)) {
     return transaction.description
   }
 
