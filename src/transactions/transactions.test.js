@@ -63,7 +63,7 @@ describe('/transactions', () => {
 
     const monzoTransactions = nock('https://api.monzo.com:443')
       .get('/transactions')
-      .query({ 'account_id': 'acc_00008gju41AHyfLUzBUk8A', 'expand': 'merchant', 'since': '2017-06-01T00:00:00Z', 'before': '2017-06-30T23:59:59Z' })
+      .query({ 'account_id': 'acc_00008gju41AHyfLUzBUk8A', 'expand': 'merchant', 'since': '2018-06-01T00:00:00Z', 'before': '2018-06-30T23:59:59Z' })
       .reply(200, { transactions: [] })
 
     const sheetsTokenRequest = nock('https://accounts.google.com:443')
