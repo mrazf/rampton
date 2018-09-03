@@ -73,7 +73,7 @@ describe('Monzo webhooks', () => {
         })
     })
 
-    it('second transaction with same ID is ignored', async () => {
+    it('second transaction with same ID is ignored', () => {
       const sheetsRequest = nock('https://sheets.googleapis.com:443')
       .post('/v4/spreadsheets/mockSpreadsheetId/values/sepMonzoTransactions:append', {
         'values': [
@@ -92,19 +92,19 @@ describe('Monzo webhooks', () => {
         }
       }
 
-      await request(app)
+      return request(app)
         .post('/monzo-webhook')
         .send(secondTransaction)
         .expect(201, secondTransaction)
         .then(() => {
           tokenRequest.done()
           sheetsRequest.done()
-        })
 
-      await request(app)
-        .post('/monzo-webhook')
-        .send(secondTransaction)
-        .expect(200, { meta: 'ignored' })
+          return request(app)
+            .post('/monzo-webhook')
+            .send(secondTransaction)
+            .expect(200, { meta: 'ignored' })
+        })
     })
   })
 
