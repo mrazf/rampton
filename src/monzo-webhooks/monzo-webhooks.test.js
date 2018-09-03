@@ -40,32 +40,72 @@ describe('Monzo webhooks', () => {
     database.clear()
   })
 
-  it('200s, echoes the transaction and writes the transformed transaction to Google Sheets', () => {
-    const tokenRequest = nock('https://accounts.google.com:443')
-      .post('/o/oauth2/token')
-      .query(true)
-      .reply(200, {
-        'access_token': 'a_c+', 'expires_in': '3600', 'token_type': 'Bearer'
-      })
+  describe('successfull transaction processing', () => {
+    let tokenRequest
 
-    const sheetsRequest = nock('https://sheets.googleapis.com:443')
+    beforeEach(() => {
+      tokenRequest = nock('https://accounts.google.com:443')
+        .post('/o/oauth2/token')
+        .query(true)
+        .reply(200, {
+          'access_token': 'a_c+', 'expires_in': '3600', 'token_type': 'Bearer'
+        })
+    })
+
+    it('200s, echoes the transaction and writes the transformed transaction to Google Sheets', () => {
+      const sheetsRequest = nock('https://sheets.googleapis.com:443')
+        .post('/v4/spreadsheets/mockSpreadsheetId/values/sepMonzoTransactions:append', {
+          'values': [
+            ['2015-09-04T14:28:40Z', 3.5, 'GBP', 'Ozone Coffee Roasters', 'Not Set', null, 'eating_out', 'tx_00008zjky19HyFLAzlUk7t']
+          ],
+          'range': 'sepMonzoTransactions'
+        })
+        .query({'valueInputOption': 'RAW'})
+        .reply({})
+
+      return request(app)
+        .post('/monzo-webhook')
+        .send(transactionCreated)
+        .expect(201, transactionCreated)
+        .then(() => {
+          tokenRequest.done()
+          sheetsRequest.done()
+        })
+    })
+
+    it('second transaction with same ID is ignored', () => {
+      const sheetsRequest = nock('https://sheets.googleapis.com:443')
       .post('/v4/spreadsheets/mockSpreadsheetId/values/sepMonzoTransactions:append', {
         'values': [
-          ['2015-09-04T14:28:40Z', 3.5, 'GBP', 'Ozone Coffee Roasters', 'Not Set', null, 'eating_out', 'tx_00008zjky19HyFLAzlUk7t']
+          ['2015-09-04T14:28:40Z', 3.5, 'GBP', 'Ozone Coffee Roasters', 'Not Set', null, 'eating_out', 'poopy']
         ],
         'range': 'sepMonzoTransactions'
       })
       .query({'valueInputOption': 'RAW'})
       .reply({})
 
-    return request(app)
-      .post('/monzo-webhook')
-      .send(transactionCreated)
-      .expect(200, transactionCreated)
-      .then(() => {
-        tokenRequest.done()
-        sheetsRequest.done()
-      })
+      const secondTransaction = {
+        ...transactionCreated,
+        data: {
+          ...transactionCreated.data,
+          id: 'poopy'
+        }
+      }
+
+      return request(app)
+        .post('/monzo-webhook')
+        .send(secondTransaction)
+        .expect(201, secondTransaction)
+        .then(() => {
+          tokenRequest.done()
+          sheetsRequest.done()
+
+          return request(app)
+            .post('/monzo-webhook')
+            .send(secondTransaction)
+            .expect(200, { meta: 'ignored' })
+        })
+    })
   })
 
   it('200s and returns an description why transaction wasnt processed', () => {
