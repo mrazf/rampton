@@ -1,4 +1,5 @@
 import express from 'express'
+import NodeCache from 'node-cache'
 import authenticate from '../middleware/authenticate'
 import getHooks from '../monzo/get-hooks'
 import postHook from '../monzo/post-hook'
@@ -7,6 +8,7 @@ import userFromAccountId from './user-from-account-id'
 import transformAndWrite from './transform-and-write'
 
 const router = express.Router()
+const cache = new NodeCache()
 
 router.get('/monzo-webhooks', authenticate, (req, res) => {
   configurator(req.params.uid)
@@ -23,8 +25,6 @@ router.post('/monzo-webhooks', authenticate, (req, res) => {
     .then(result => res.send(200, result))
 })
 
-const seenTransactionIds = []
-
 const processTransaction = (req, res, next) => {
   const {
     include_in_spending: includeInSpending,
@@ -32,10 +32,10 @@ const processTransaction = (req, res, next) => {
     id
   } = req.body.data
 
-  if (seenTransactionIds.includes(id)) {
+  if (cache.get(id)) {
     return res.status(200).send({ meta: 'ignored' })
   } else {
-    seenTransactionIds.push(id)
+    cache.set(id, true, 82800)
   }
 
   if (includeInSpending === false) {

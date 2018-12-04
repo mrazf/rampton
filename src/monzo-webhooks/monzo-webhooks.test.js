@@ -52,7 +52,7 @@ describe('Monzo webhooks', () => {
         })
     })
 
-    it('200s, echoes the transaction and writes the transformed transaction to Google Sheets', () => {
+    xit('200s, echoes the transaction and writes the transformed transaction to Google Sheets', () => {
       const sheetsRequest = nock('https://sheets.googleapis.com:443')
         .post('/v4/spreadsheets/mockSpreadsheetId/values/sepMonzoTransactions:append', {
           'values': [
@@ -108,7 +108,7 @@ describe('Monzo webhooks', () => {
     })
   })
 
-  it('200s and returns an description why transaction wasnt processed', () => {
+  xit('200s and returns an description why transaction wasnt processed', () => {
     const rejectedTransaction = {
       data: {
         include_in_spending: false,
