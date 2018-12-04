@@ -3,7 +3,7 @@ node_js:
   - '6'
 cache: yarn
 script:
-  - npm run lint
+  # - npm run lint
   - npm run test:unit
 after_success: npm run build
 deploy:
